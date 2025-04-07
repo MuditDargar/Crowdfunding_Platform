@@ -1,0 +1,48 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,500;1,600&display=swap');
+@import "tailwindcss";
+
+
+html, body {
+   margin: 0;
+   padding: 0;
+  
+} 
+
+.poppins-medium {
+    font-family: "Poppins", sans-serif;
+    font-weight: 500;
+    font-style: normal;
+}
+  
+.poppins-semibold-italic {
+    font-family: "Poppins", sans-serif;
+    font-weight: 600;
+    font-style: italic;
+}
+
+
+.cl-internal-16vtwdp{
+    display: none !important;
+}
+.cl-internal-1dauvpw{
+    display: none !important;
+}
+
+.cl-card{
+    border-radius: 2px !important;
+}
+
+.cl-internal-y44tp9{
+    display: none !important;
+}
+
+.ant-form-item:{
+    margin-bottom: 5px !important;
+}
+
+table{
+    border: 1px solid #ccc;
+    margin-top: 10px;
+}
