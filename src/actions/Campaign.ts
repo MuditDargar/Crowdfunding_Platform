@@ -3,6 +3,7 @@
 import { getCurrentUserDataFromMongoDb } from "./users";
 import { connectDB } from "@/db/config";
 import CampaignModel from "@/models/campaign-model";
+import { revalidatePath } from "next/cache";
 connectDB() ;
 
 export const addNewCampaign= async (reqbody:any) =>{
@@ -11,6 +12,7 @@ export const addNewCampaign= async (reqbody:any) =>{
         reqbody.createdby = currentUser?.data._id;
         const campaign = new CampaignModel(reqbody);
          await campaign.save();
+        revalidatePath("/admin/campaigns");
         return {
             message: "Campaign created successfully",
             
@@ -38,3 +40,18 @@ export const editCampaign= async (reqbody:any) =>{
         };
     }
 }
+
+export const deleteCampaign= async (id:string) =>{
+    try {
+        await CampaignModel.findByIdAndDelete(id);
+        revalidatePath("/admin/campaigns");
+        return {
+            message: "Campaign deleted successfully",
+            
+        } ;
+    } catch (error:any) {
+        return{
+        error:error.message ,
+        };
+    }
+} 
