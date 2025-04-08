@@ -31,8 +31,8 @@ import { NextRequest, NextResponse } from "next/server";
 import Razorpay from "razorpay";
 
 const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID!,     // ✅ Make sure this is defined in .env.local
-  key_secret: process.env.RAZORPAY_SECRET!, // ✅ Same here
+  key_id: process.env.RAZORPAY_KEY_ID || " ",     // ✅ Make sure this is defined in .env.local
+  key_secret: process.env.RAZORPAY_SECRET_KEY|| "", // ✅ Same here
 });
 
 export async function POST(req: NextRequest) {
