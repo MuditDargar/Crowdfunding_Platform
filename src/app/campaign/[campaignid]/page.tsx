@@ -8,14 +8,15 @@ import DonationCard from "@/components/donation-card";
 connectDB() ;
 
 interface SingleCampaignPageProps {
-    params : {
-        campaignid : string ;
-    }
+    params : Promise<{ campaignid: string }>
 
 }
 
 async function SingleCampaignPage({params} : SingleCampaignPageProps) {
-    const campaign : CampaignType = await CampaignModel.findById(params.campaignid) as any ;
+
+    const { campaignid } =await  params ;
+    
+    const campaign : CampaignType = await CampaignModel.findById(campaignid) as any ;
 
 const getproperty= (key:string,value:any) => {
     return(

@@ -16,9 +16,9 @@ const config: Config = {
     },
   },
   plugins: [],
-  coreplugin :{
-    preflight: false,
-  }
+  // coreplugin :{
+  //   preflight: false,
+  // }
 };
 
 export default config;

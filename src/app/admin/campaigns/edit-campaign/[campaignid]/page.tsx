@@ -8,15 +8,13 @@ import CampaignModel from '@/models/campaign-model'
 
 connectDB() ;
 
-interface Props {
-  params: {
-    campaignid: string
-  }
+interface PageProps {
+  params: Promise<{ campaignid: string }>
 }
 
-async function EditCampaignPage({params}: Props) {
+async function EditCampaignPage({params}: PageProps) {
 
-  const { campaignid } = params ;
+  const { campaignid } =await  params ;
   
  const campaign = await CampaignModel.findById(campaignid) 
 
