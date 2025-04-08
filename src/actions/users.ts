@@ -7,6 +7,7 @@ connectDB();
 
 
 export const handleNewUserRegistration = async ()=>{
+    await connectDB() ;
     // handle new user registration
     try{
       const loggedInUserData = await currentUser();

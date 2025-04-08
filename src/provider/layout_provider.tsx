@@ -48,6 +48,8 @@ const adminMenu =[
       const response = await getCurrentUserDataFromMongoDb();
       if(response.error) throw new Error(response.error);
       setcurrentUser(response.data);
+      console.log("Current User",response.data);
+      
       if(response.data.isadmin){
         setmenuToShow(adminMenu);
       }
