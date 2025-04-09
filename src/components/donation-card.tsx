@@ -116,6 +116,9 @@
 import React, { useEffect, useState } from "react";
 import { Button, Input, Progress, message as AntMessage } from "antd";
 import { connectDB } from "@/db/config";
+import {CheckoutProvider} from '@stripe/react-stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
+import {loadStripe} from '@stripe/stripe-js';
 const { TextArea } = Input;
 connectDB();
 
@@ -128,9 +131,11 @@ interface CampaignType {
 interface DonationCardProps {
   campaign: CampaignType;
 }
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 function DonationCard({ campaign }: DonationCardProps) {
-  const [amount, setamount] = useState<number>();
+  const [clientSecret="", setClientSecret] = React.useState<String>("") ;
+   const [amount, setamount] = useState<number>();
   const [message, setmessage] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -138,86 +143,86 @@ function DonationCard({ campaign }: DonationCardProps) {
     (campaign.collectAmount / campaign.TargetAmount) * 100;
 
   // Load Razorpay script
-  useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.async = true;
-    document.body.appendChild(script);
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, []);
+  // useEffect(() => {
+  //   const script = document.createElement("script");
+  //   script.src = "https://checkout.razorpay.com/v1/checkout.js";
+  //   script.async = true;
+  //   document.body.appendChild(script);
+  //   return () => {
+  //     document.body.removeChild(script);
+  //   };
+  // }, []);
 
-  const handleDonate = async () => {
-    if (!amount || amount <= 0) {
-      AntMessage.warning("Please enter a valid amount.");
-      return;
-    }
+  // const handleDonate = async () => {
+  //   if (!amount || amount <= 0) {
+    //   AntMessage.warning("Please enter a valid amount.");
+    //   return;
+    // }
 
-    setLoading(true);
-    try {
-      // Create Razorpay order
-      const res = await fetch("/api/create-order", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ amount: amount * 100 }), // in paisa
-      });
+    // setLoading(true);
+    // try {
+    //   // Create Razorpay order
+    //   const res = await fetch("/api/create-order", {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify({ amount: amount * 100 }), // in paisa
+    //   });
 
-      const data = await res.json();
+    //   const data = await res.json();
 
-      const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
-        amount: data.amount,
-        currency: data.currency,
-        name: "Raise IT - Crowdfunding",
-        description: "Donation",
-        order_id: data.id,
-        handler: async function (response: any) {
-          AntMessage.success("Donation successful!");
+  //     const options = {
+  //       key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
+  //       amount: data.amount,
+  //       currency: data.currency,
+  //       name: "Raise IT - Crowdfunding",
+  //       description: "Donation",
+  //       order_id: data.id,
+  //       handler: async function (response: any) {
+  //         AntMessage.success("Donation successful!");
 
-          // Save donation to backend
-          await fetch("/api/razorpay/save-donation", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              campaignId: campaign._id,
-              amount,
-              message,
-              razorpayPaymentId: response.razorpay_payment_id,
-              razorpayOrderId: response.razorpay_order_id,
-              razorpaySignature: response.razorpay_signature,
-            }),
-          });
+  //         // Save donation to backend
+  //         await fetch("/api/razorpay/save-donation", {
+  //           method: "POST",
+  //           headers: { "Content-Type": "application/json" },
+  //           body: JSON.stringify({
+  //             campaignId: campaign._id,
+  //             amount,
+  //             message,
+  //             razorpayPaymentId: response.razorpay_payment_id,
+  //             razorpayOrderId: response.razorpay_order_id,
+  //             razorpaySignature: response.razorpay_signature,
+  //           }),
+  //         });
 
-          // Optionally reset fields or refresh campaign state
-          setamount(undefined);
-          setmessage("");
-        },
-        prefill: {
-          name: "Donor",
-          email: "donor@example.com",
-          contact: "9000000000",
-        },
-        notes: {
-          campaignId: campaign._id,
-          message: message,
-        },
-        theme: {
-          color: "#164863",
-        },
-      };
+  //         // Optionally reset fields or refresh campaign state
+  //         setamount(undefined);
+  //         setmessage("");
+  //       },
+  //       prefill: {
+  //         name: "Donor",
+  //         email: "donor@example.com",
+  //         contact: "9000000000",
+  //       },
+  //       notes: {
+  //         campaignId: campaign._id,
+  //         message: message,
+  //       },
+  //       theme: {
+  //         color: "#164863",
+  //       },
+  //     };
 
-      const razor = new (window as any).Razorpay(options);
-      razor.open();
-    } catch (error) {
-      console.error("Payment Error:", error);
-      AntMessage.error("Something went wrong. Try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     const razor = new (window as any).Razorpay(options);
+  //     razor.open();
+  //   } catch (error) {
+  //     console.error("Payment Error:", error);
+  //     AntMessage.error("Something went wrong. Try again.");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   return (
     <div className="border border-solid border-gray-400 rounded p-4 flex flex-col">
@@ -248,7 +253,7 @@ function DonationCard({ campaign }: DonationCardProps) {
           block
           disabled={!amount || loading}
           loading={loading}
-          onClick={handleDonate}
+       
         >
           Donate
         </Button>
