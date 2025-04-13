@@ -1,7 +1,7 @@
 "use server"
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY!);
 
-export const getClientSecret = async (reqbody:any)=>{
+export const getStripeClientSecret = async (reqbody:any)=>{
     try{
     const paymentIntent = await stripe.paymentIntents.create({
         amount: reqbody.amount,
@@ -16,9 +16,8 @@ export const getClientSecret = async (reqbody:any)=>{
     }
     }
     catch(error:any){
-        return{
-            error:error.message,
-        }
+        console.log("PaymentIntent error:", error.message);
+       
     }
 
 }

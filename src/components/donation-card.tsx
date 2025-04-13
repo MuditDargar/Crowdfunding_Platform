@@ -114,11 +114,14 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Button, Input, Progress, message as AntMessage } from "antd";
+import { Button, Input, Progress, message as AntMessage, Modal } from "antd";
 import { connectDB } from "@/db/config";
 import {CheckoutProvider} from '@stripe/react-stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import {loadStripe} from '@stripe/stripe-js';
+import { getStripeClientSecret } from "@/actions/payment";
+import { set } from "mongoose";
+import PaymentModel from "./payment-model";
 const { TextArea } = Input;
 connectDB();
 
@@ -133,16 +136,114 @@ interface DonationCardProps {
 }
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
+
 function DonationCard({ campaign }: DonationCardProps) {
-  const [clientSecret="", setClientSecret] = React.useState<String>("") ;
+  const [showPaymentForm , setShowPaymentForm] = useState<boolean>(false);
+  const [loading , setLoading] = React.useState<Boolean>(false);
+  const [clientSecret, setClientSecret] = React.useState<String>("") ;
    const [amount, setamount] = useState<number>();
   const [message, setmessage] = useState("");
-  const [loading, setLoading] = useState(false);
+ 
 
-  const collectedpercentage =
-    (campaign.collectAmount / campaign.TargetAmount) * 100;
+  const collectedpercentage =(campaign.collectAmount / campaign.TargetAmount) * 100;
 
-  // Load Razorpay script
+
+  const getclientsecret = async (amount: number) => {
+    try {
+      setLoading(true);
+      const response = await getStripeClientSecret({
+        amount: amount * 100, // convert to paisa
+     
+      })
+      if(response.error) throw new Error(response.error.message);
+     setClientSecret(response.clientSecret);
+     console.log("client secret", response.clientSecret);
+      setShowPaymentForm(true);
+    } catch (error) {
+      
+    }
+    finally{
+      setLoading(false);
+    }
+  }
+
+
+  
+  return (
+    <div className="border border-solid border-gray-400 rounded p-4 flex flex-col">
+      <span className="text-xl text-[#164863] font-semibold">
+        ₹ {campaign.collectAmount} raised of ₹ {campaign.TargetAmount}
+      </span>
+      <Progress percent={collectedpercentage} />
+      <span className="text-sm text-gray-600 mt-2">
+        No donation yet. Be the first to donate to this campaign
+      </span>
+
+      <div className="flex flex-col gap-5 mt-5">
+        <Input
+          placeholder="Amount"
+          type="number"
+          onChange={(e) => setamount(parseInt(e.target.value))}
+          value={amount}
+          className="p-3"
+        />
+        <TextArea
+          placeholder="Message"
+          rows={4}
+          onChange={(e) => setmessage(e.target.value)}
+          value={message}
+        />
+        <Button
+          type="primary"
+          block
+          disabled={!amount }
+          onClick={()=>getclientsecret(amount!)}
+           loading={loading}
+        >
+          Donate
+        </Button>
+      </div>
+      {showPaymentForm &&  clientSecret && (
+        <Modal  open={showPaymentForm} 
+        onCancel={()=>{
+          setShowPaymentForm(false);
+          setClientSecret("");
+        }
+      }
+         footer={null} width={600} title="Complete your donation payment">
+        <Elements stripe={stripePromise}
+         options={{
+          clientSecret: clientSecret
+          }}>
+          <PaymentModel 
+          messageText={message}
+          campaign={campaign}
+          amount={amount || 0}
+          />
+        </Elements>
+      </Modal>
+      )
+        }
+    </div>
+  );
+}
+
+export default DonationCard;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Load Razorpay script
   // useEffect(() => {
   //   const script = document.createElement("script");
   //   script.src = "https://checkout.razorpay.com/v1/checkout.js";
@@ -224,42 +325,3 @@ function DonationCard({ campaign }: DonationCardProps) {
   //   }
   // };
 
-  return (
-    <div className="border border-solid border-gray-400 rounded p-4 flex flex-col">
-      <span className="text-xl text-[#164863] font-semibold">
-        ₹ {campaign.collectAmount} raised of ₹ {campaign.TargetAmount}
-      </span>
-      <Progress percent={collectedpercentage} />
-      <span className="text-sm text-gray-600 mt-2">
-        No donation yet. Be the first to donate to this campaign
-      </span>
-
-      <div className="flex flex-col gap-5 mt-5">
-        <Input
-          placeholder="Amount"
-          type="number"
-          onChange={(e) => setamount(parseInt(e.target.value))}
-          value={amount}
-          className="p-3"
-        />
-        <TextArea
-          placeholder="Message"
-          rows={4}
-          onChange={(e) => setmessage(e.target.value)}
-          value={message}
-        />
-        <Button
-          type="primary"
-          block
-          disabled={!amount || loading}
-          loading={loading}
-       
-        >
-          Donate
-        </Button>
-      </div>
-    </div>
-  );
-}
-
-export default DonationCard;
