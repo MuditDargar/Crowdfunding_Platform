@@ -138,7 +138,8 @@ interface DonationCardProps {
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 
-function DonationCard({ campaign , donations }: DonationCardProps) {
+function DonationCard({ campaign , donations=[]}: DonationCardProps) {
+  const [ShowAllDonations , setShowAllDonations] = useState<Boolean>(false);
   const [showPaymentForm , setShowPaymentForm] = useState<boolean>(false);
   const [loading , setLoading] = React.useState<Boolean>(false);
   const [clientSecret, setClientSecret] = React.useState<String>("") ;
@@ -200,10 +201,22 @@ function DonationCard({ campaign , donations }: DonationCardProps) {
         ₹ {campaign.collectAmount} raised of ₹ {campaign.TargetAmount}
       </span>
       <Progress percent={collectedpercentage} />
-      <span className="text-gray-600 text-sm font-semibold pb-5" >
+      <span className="text-gray-600 text-sm font-semibold mt-2" >
         Recent Donation
       </span>
-      <div className="flex flex-col gap-5">{getaRecentDonations()}</div>
+      <div className="flex flex-col gap-1 my-3">{getaRecentDonations()}</div>
+
+{donations?.length  > 0 && (
+  <span className="text-sm text-[#164863] font-semibold  cursor-pointer underline mt-10 "
+  onClick={() => setShowAllDonations(true)}
+  >
+    View all (" ")
+  </span> 
+)}
+
+
+<hr className="my-3"  />
+
       <span className="text-sm text-gray-600 mt-2">
         No donation yet. Be the first to donate to this campaign
       </span>
@@ -253,6 +266,25 @@ function DonationCard({ campaign , donations }: DonationCardProps) {
       </Modal>
       )
         }
+
+<Modal  open={ShowAllDonations} 
+        onCancel={()=>{
+         setShowAllDonations(false);
+        }
+      }
+         footer={null} width={600} title="All donation for this campaign">
+        <Elements stripe={stripePromise}
+         options={{
+          clientSecret: clientSecret
+          }}>
+          <PaymentModel 
+          messageText={message}
+          campaign={campaign}
+          amount={amount || 0}
+          /> 
+        </Elements>
+      </Modal>
+      
     </div>
   );
 }
