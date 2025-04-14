@@ -10,7 +10,7 @@ export default async function Home() {
 await handleNewUserRegistration() ;
 const campaigns : CampaignType[] = (await CampaignModel.find({}).sort({
   createdAt: -1 ,
-}))  ;
+})) as any ;
 
   return (
     <div >

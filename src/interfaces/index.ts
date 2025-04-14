@@ -28,5 +28,5 @@ interface DonationType{
     paymentId: string;
     camaign:CampaignType ;
     user: Usertype ;
-    
+    message: string;
 }
