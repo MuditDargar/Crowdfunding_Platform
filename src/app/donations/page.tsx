@@ -9,7 +9,10 @@ connectDB();
 
 async function DonationsPage() {
   const mongouser = await getCurrentUserDataFromMongoDb();
-  const donations = await DonationModal.find({ userId: mongouser.data._id });
+  const donations = await DonationModal.find({ userId: mongouser.data._id })
+  .populate("campaign")
+  .populate("user")
+  .sort({ createdAt: -1 });
   return (
     <div>
       <PageTitle title="Donations" />
