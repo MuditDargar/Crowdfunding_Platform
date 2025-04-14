@@ -114,14 +114,16 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Button, Input, Progress, message as AntMessage, Modal } from "antd";
+import { Button, Input, Progress, Modal } from "antd";
 import { connectDB } from "@/db/config";
 import {CheckoutProvider} from '@stripe/react-stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
+import {message as antdMessage} from "antd";
 import {loadStripe} from '@stripe/stripe-js';
 import { getStripeClientSecret } from "@/actions/payment";
 import { set } from "mongoose";
 import PaymentModel from "./payment-model";
+import { getDonationsByCampaignId } from "@/actions/donation";
 const { TextArea } = Input;
 connectDB();
 
@@ -139,6 +141,7 @@ const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
 
 
 function DonationCard({ campaign , donations=[]}: DonationCardProps) {
+  const [allDonations = []  , SetallDonations] = useState<DonationType[]>([]);
   const [ShowAllDonations , setShowAllDonations] = useState<Boolean>(false);
   const [showPaymentForm , setShowPaymentForm] = useState<boolean>(false);
   const [loading , setLoading] = React.useState<Boolean>(false);
@@ -169,6 +172,21 @@ function DonationCard({ campaign , donations=[]}: DonationCardProps) {
     }
   }
 
+  const donationCard = (donation:DonationType) =>{
+    return (
+      <div key={donation._id} className="border-gray-400 bg-gray-100 rounded-sm p-4 flex flex-col">
+        <span className="text-sm text-gray-600 mt-2 font-semibold">
+          {donation.user.userName} donated ₹{donation.amount}
+        </span>
+        <span className="text-sm text-gray-600 mt-2">
+          "{donation.message}"
+        </span>
+      </div>
+    )
+
+  }
+
+
   const  getaRecentDonations = () => {
    // if(donations?.length === 0){
       //  return (
@@ -181,19 +199,25 @@ function DonationCard({ campaign , donations=[]}: DonationCardProps) {
       return (
         <div className="flex flex-col gap-2">
           {donations?.map((donation) => (
-            <div key={donation._id} className="border-gray-400 bg-gray-100 rounded-sm p-4 flex flex-col">
-              <span className="text-sm text-gray-600 mt-2 font-semibold">
-                {donation.user.userName} donated ₹{donation.amount}
-              </span>
-              <span className="text-sm text-gray-600 mt-2">
-                "{donation.message}"
-              </span>
-            </div>
+            donationCard(donation)
           ))}
         </div>
       );
     
   };
+
+  const getallDonations = async () => {
+    try{
+   const response : any = await getDonationsByCampaignId(campaign._id);
+    if(response.error) throw new Error(response.error.message);
+    SetallDonations(response.data);
+    }
+    catch(error:any){
+      antdMessage.error(error.message);
+      console.log("Error in getting all donations", error);
+    }
+  }
+
   
   return (
     <div className="border border-solid border-gray-400 rounded p-4 flex flex-col">
@@ -208,7 +232,11 @@ function DonationCard({ campaign , donations=[]}: DonationCardProps) {
 
 {donations?.length  > 0 && (
   <span className="text-sm text-[#164863] font-semibold  cursor-pointer underline mt-10 "
-  onClick={() => setShowAllDonations(true)}
+  onClick={() => { 
+    setShowAllDonations(true)
+    getallDonations();
+  }
+  }
   >
     View all (" ")
   </span> 
@@ -273,16 +301,19 @@ function DonationCard({ campaign , donations=[]}: DonationCardProps) {
         }
       }
          footer={null} width={600} title="All donation for this campaign">
-        <Elements stripe={stripePromise}
-         options={{
-          clientSecret: clientSecret
-          }}>
-          <PaymentModel 
-          messageText={message}
-          campaign={campaign}
-          amount={amount || 0}
-          /> 
-        </Elements>
+        <div className="flex flex-col gap-2">
+          {allDonations?.map((donation) => (
+            <div key={donation._id} className="border-gray-400 bg-gray-100 rounded-sm p-4 flex flex-col">
+              <span className="text-sm text-gray-600 mt-2 font-semibold">
+              ₹{donation.amount}   donated by  {donation.user.userName}
+              </span>
+              <span className="text-sm text-gray-600 mt-2">
+                "{donation.message}"
+              </span>
+            </div>
+          ))}
+        </div>
+       
       </Modal>
       
     </div>

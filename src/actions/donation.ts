@@ -35,3 +35,22 @@ export const addNewDonation = async  (reqbody : any) =>{
     }
 
 }
+
+
+export const getDonationsByCampaignId = async (campaignid : string) => {
+    try{
+        const donation = await DonationModal.find({campaign: campaignid}).populate(
+            "user"
+        ) ;
+        return {
+            success: true,
+            data: donation,
+        };
+
+    }
+    catch (error:any) {
+        return {
+            error:error.message ,
+        }
+    }
+}
