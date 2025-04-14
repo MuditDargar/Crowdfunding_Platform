@@ -3,6 +3,7 @@ import { connectDB } from "@/db/config";
 import React from "react";
 import LinkButton from "@/components/link-button";
 import DonationCard from "@/components/donation-card";
+import DonationModal from "@/models/donation-model";
 
 
 connectDB() ;
@@ -17,6 +18,11 @@ async function SingleCampaignPage({params} : SingleCampaignPageProps) {
     const { campaignid } =await  params ;
     
     const campaign : CampaignType = await CampaignModel.findById(campaignid) as any ;
+
+    const  recent5donations =await DonationModal.find(
+        {campaign: campaignid}).populate("user", "userName ")
+        .sort({createdAt: -1})
+        .limit(5);
 
 const getproperty= (key:string,value:any) => {
     return(
@@ -52,7 +58,10 @@ return(
           <p className="text-md text-gray-600">{campaign.description} </p>
         </div>
         <div className="col-span-1">
-            <DonationCard campaign={
+
+            <DonationCard 
+            donations={JSON.parse(JSON.stringify(recent5donations))}
+            campaign={
                 JSON.parse(JSON.stringify(campaign))
             } />
         </div>

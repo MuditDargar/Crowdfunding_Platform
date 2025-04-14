@@ -20,3 +20,13 @@ interface Usertype{
     isAdmin: boolean;
     clerkUserid : string ;
 }
+
+
+interface DonationType{
+    _id: string;
+    amount: number;
+    paymentId: string;
+    camaign:CampaignType ;
+    user: Usertype ;
+    
+}

@@ -133,11 +133,12 @@ interface CampaignType {
 
 interface DonationCardProps {
   campaign: CampaignType;
+  donations ?: DonationType[];
 }
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 
-function DonationCard({ campaign }: DonationCardProps) {
+function DonationCard({ campaign , donations }: DonationCardProps) {
   const [showPaymentForm , setShowPaymentForm] = useState<boolean>(false);
   const [loading , setLoading] = React.useState<Boolean>(false);
   const [clientSecret, setClientSecret] = React.useState<String>("") ;
@@ -167,7 +168,31 @@ function DonationCard({ campaign }: DonationCardProps) {
     }
   }
 
-
+  const  getaRecentDonations = () => {
+   // if(donations?.length === 0){
+      //  return (
+        // <span className="text-sm text-gray-600 mt-2">
+        //   No donation yet. Be the first to donate to this campaign
+        // </span>
+   //   );
+   // };
+  
+      return (
+        <div className="flex flex-col gap-2">
+          {donations?.map((donation) => (
+            <div key={donation._id} className="border-gray-400 bg-gray-100 rounded-sm p-4 flex flex-col">
+              <span className="text-sm text-gray-600 mt-2 font-semibold">
+                {donation.user.userName} donated ₹{donation.amount}
+              </span>
+              <span className="text-sm text-gray-600 mt-2">
+                "{donation.message}"
+              </span>
+            </div>
+          ))}
+        </div>
+      );
+    
+  };
   
   return (
     <div className="border border-solid border-gray-400 rounded p-4 flex flex-col">
@@ -175,6 +200,10 @@ function DonationCard({ campaign }: DonationCardProps) {
         ₹ {campaign.collectAmount} raised of ₹ {campaign.TargetAmount}
       </span>
       <Progress percent={collectedpercentage} />
+      <span className="text-gray-600 text-sm font-semibold pb-5" >
+        Recent Donation
+      </span>
+      <div className="flex flex-col gap-5">{getaRecentDonations()}</div>
       <span className="text-sm text-gray-600 mt-2">
         No donation yet. Be the first to donate to this campaign
       </span>
@@ -219,7 +248,7 @@ function DonationCard({ campaign }: DonationCardProps) {
           messageText={message}
           campaign={campaign}
           amount={amount || 0}
-          />
+          /> 
         </Elements>
       </Modal>
       )
