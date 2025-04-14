@@ -294,7 +294,7 @@ function DonationCard({ campaign , donations=[]}: DonationCardProps) {
       </Modal>
       )
         }
-
+{ShowAllDonations && (
 <Modal  open={ShowAllDonations} 
         onCancel={()=>{
          setShowAllDonations(false);
@@ -303,19 +303,13 @@ function DonationCard({ campaign , donations=[]}: DonationCardProps) {
          footer={null} width={600} title="All donation for this campaign">
         <div className="flex flex-col gap-2">
           {allDonations?.map((donation) => (
-            <div key={donation._id} className="border-gray-400 bg-gray-100 rounded-sm p-4 flex flex-col">
-              <span className="text-sm text-gray-600 mt-2 font-semibold">
-              ₹{donation.amount}   donated by  {donation.user.userName}
-              </span>
-              <span className="text-sm text-gray-600 mt-2">
-                "{donation.message}"
-              </span>
-            </div>
+            donationCard(donation)
           ))}
         </div>
        
       </Modal>
-      
+  )
+}
     </div>
   );
 }

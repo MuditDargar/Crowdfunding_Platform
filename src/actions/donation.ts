@@ -44,7 +44,7 @@ export const getDonationsByCampaignId = async (campaignid : string) => {
         ) ;
         return {
             success: true,
-            data: donation,
+            data : JSON.parse(JSON.stringify(donation)) ,
         };
 
     }
