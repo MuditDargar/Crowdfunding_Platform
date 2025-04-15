@@ -12,7 +12,7 @@ interface DonationTableProps {
 
 function DonationTable ({donations, fromAdmin} : DonationTableProps) {
    
-    let columns = [
+    let columns : any [] = [
         {
            title : "Campaign" ,
               dataIndex : "campaign" ,
@@ -51,7 +51,21 @@ function DonationTable ({donations, fromAdmin} : DonationTableProps) {
             }
         },
       
-    ]
+    ] ;
+
+    if(fromAdmin){
+        // add user column after campaign column
+        columns.splice(1, 0, {
+            title : "User" ,
+            dataIndex : "user" ,
+            key: "user" ,
+            render  :(user : UserType) => {
+                return (
+                    <span>{user.userName}</span>
+                )
+            }
+        })
+    }
     
     return (
         <div> 
