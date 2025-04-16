@@ -67,7 +67,10 @@ async function Dashboardpage() {
   <h1 className='text-xl font-bold text-gray-600 mb-5'>
     Recent Campaigns
     </h1>
-    <CampaignsTable campaigns={JSON.parse(JSON.stringify(recentCampaigns))}/>
+    <CampaignsTable 
+    campaigns={JSON.parse(JSON.stringify(recentCampaigns))}
+    pagination={false}
+    />
       </div>
     </div>
   )

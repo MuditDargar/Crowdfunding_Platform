@@ -9,9 +9,11 @@ import { deleteCampaign } from "@/actions/Campaign";
 
 interface Props {
     campaigns: CampaignType[];
+    pagination?: any;
+
 }
 
-function CampaignsTable({campaigns}: Props) {
+function CampaignsTable({campaigns , pagination =true}: Props) {
   const router = useRouter();
   const[loading,setloading] = React.useState(false);
   const  onDelete= async (id: string) => {
@@ -105,9 +107,11 @@ function CampaignsTable({campaigns}: Props) {
   ]
     return(
     <div>
-  <Table dataSource={campaigns} columns={columns}
+  <Table 
+  dataSource={campaigns} 
+  columns={columns}
   loading={loading}
-
+pagination={pagination === undefined ? true : pagination}
    />
     </div>
     )
