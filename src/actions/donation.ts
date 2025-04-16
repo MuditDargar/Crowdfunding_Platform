@@ -14,13 +14,14 @@ export const addNewDonation = async  (reqbody : any) =>{
         reqbody.user = mongoUser?.data?._id ;
         const newDonation = new DonationModal(reqbody);
         await newDonation.save() ;
-
+ 
 
         //  update collected amount in campaign 
         const campaign = await CampaignModel.findById(reqbody.campaign) as any ;
         campaign.collectAmount += reqbody.amount ;
         await campaign.save()
         revalidatePath(`/camaigns/${campaign._id}`) ;
+        revalidatePath(`/donations/`) ;
 
         return {
             success: true,
