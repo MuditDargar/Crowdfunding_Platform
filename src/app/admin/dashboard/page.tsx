@@ -5,6 +5,7 @@ import CampaignModel from '@/models/campaign-model';
  import DonationModal from '@/models/donation-model';
 import React from 'react'
 import CampaignsTable from '../campaigns/_components/campaign-table';
+import DonationTable from '@/components/donation-table';
 
 connectDB()
 
@@ -33,7 +34,7 @@ async function Dashboardpage() {
 
   const [recentCampaigns , recentDonations] = await Promise.all([
     CampaignModel.find({}).sort({createdAt : -1 }).limit(5),
-    DonationModal.find({}).sort({createdAt : -1 }).limit(5),
+    DonationModal.find({}).sort({createdAt : -1 }).limit(5).populate("user").populate("campaign"),
   ])
 
 
@@ -71,6 +72,17 @@ async function Dashboardpage() {
     campaigns={JSON.parse(JSON.stringify(recentCampaigns))}
     pagination={false}
     />
+      </div>
+      <div className='mt-10'>
+  <h1 className='text-xl font-bold text-gray-600 mb-5'>
+    Recent Donations
+    </h1>
+    <DonationTable
+    donations={JSON.parse(JSON.stringify(recentDonations))}
+    pagination={false}
+    fromAdmin={true}
+    />
+
       </div>
     </div>
   )

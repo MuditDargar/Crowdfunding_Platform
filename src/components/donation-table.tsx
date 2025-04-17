@@ -10,7 +10,7 @@ interface DonationTableProps {
 
 }
 
-function DonationTable ({donations, fromAdmin} : DonationTableProps) {
+function DonationTable ({donations, fromAdmin=false , pagination} : DonationTableProps) {
    
     let columns : any [] = [
         {
@@ -69,7 +69,7 @@ function DonationTable ({donations, fromAdmin} : DonationTableProps) {
     
     return (
         <div> 
-<Table dataSource={donations} columns={columns} />
+<Table dataSource={donations} columns={columns} pagination={pagination} />
      </div>
     )
 
