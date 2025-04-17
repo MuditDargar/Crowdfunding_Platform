@@ -19,7 +19,7 @@
     "cloudinary": "^2.6.0",
     "dayjs": "^1.11.13",
     "firebase": "^11.5.0",
-    "mongoose": "^8.12.2",
+    "mongoose": "^8.13.2",
     "next": "15.2.3",
     "next-cloudinary": "^6.16.0",
     "razorpay": "^2.9.6",
