@@ -7,10 +7,12 @@ interface DonationTableProps {
     // Define any props you need here
     donations : DonationType[] ;
     fromAdmin : boolean ;
+    pagination?:any;
+    fromCampaign ?:boolean
 
 }
 
-function DonationTable ({donations, fromAdmin=false , pagination} : DonationTableProps) {
+function DonationTable ({donations, fromAdmin=false , pagination , fromCampaign=false} : DonationTableProps) {
    
     let columns : any [] = [
         {
@@ -65,6 +67,10 @@ function DonationTable ({donations, fromAdmin=false , pagination} : DonationTabl
                 )
             }
         })
+    }
+    if(fromCampaign){
+        // remove campaign column
+        columns = columns.filter((column) => column.key !== "campaign")
     }
     
     return (

@@ -59,7 +59,7 @@ async function Dashboardpage() {
 
       <div className="mt-10">
         <h1 className="text-2xl font-semibold mb-5">Recent Donations</h1>
-        <DonationTable donations={JSON.parse(JSON.stringify(recentdonations))} />
+        <DonationTable donations={JSON.parse(JSON.stringify(recentdonations))} fromAdmin={false} />
         </div>
 
     </div>

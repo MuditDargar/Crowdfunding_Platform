@@ -6,6 +6,7 @@ import { renderToHTML } from "next/dist/server/render";
 import { useRouter } from "next/navigation";
 // import { set } from "mongoose";
 import { deleteCampaign } from "@/actions/Campaign";
+import CampaignReportsModel from "./campaign-report-model";
 
 interface Props {
     campaigns: CampaignType[];
@@ -16,6 +17,9 @@ interface Props {
 function CampaignsTable({campaigns , pagination =true}: Props) {
   const router = useRouter();
   const[loading,setloading] = React.useState(false);
+  const [selectedCampaigns = null, setSelectedCampaigns] =
+   React.useState<CampaignType | null>(null);
+   const [showreportmodel, setShowReportModel] =React.useState<boolean>(false);
   const  onDelete= async (id: string) => {
     try{
        setloading(true);
@@ -92,6 +96,14 @@ function CampaignsTable({campaigns , pagination =true}: Props) {
       render(record: CampaignType ) {
         return (
           <div className="flex gap-5 "> 
+                    <Button 
+          onClick={() => {
+            setSelectedCampaigns(record);
+            setShowReportModel(true) ;
+
+          }}
+          size="small"  title="Report"
+          > Report</Button>
           <Button 
           onClick={() => router.push(`/admin/campaigns/edit-campaign/${record._id}`)}
           size="small" icon={<i className="ri-pencil-line"></i>} />
@@ -105,6 +117,8 @@ function CampaignsTable({campaigns , pagination =true}: Props) {
     }
     
   ]
+
+
     return(
     <div>
   <Table 
@@ -113,6 +127,14 @@ function CampaignsTable({campaigns , pagination =true}: Props) {
   loading={loading}
 pagination={pagination === undefined ? true : pagination}
    />
+
+   {showreportmodel && (
+    <CampaignReportsModel
+      showCampaignReportModel={showreportmodel}
+      setShowCampaignReportModel={setShowReportModel}
+      selectedCampaigns={selectedCampaigns}
+    />
+   )}
     </div>
     )
 }

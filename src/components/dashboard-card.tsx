@@ -12,7 +12,7 @@ interface DashboardCardProps {
 }
 
 
-async function DashboardCard({cardTitle, description, value  , onClickPath}: DashboardCardProps) {
+ function DashboardCard({cardTitle, description, value  , onClickPath}: DashboardCardProps) {
     const Router = useRouter();
     return(
         <div className="flex flex-col gap-5 p-5 border border-solid rounded border-gray-200 hover:border-gray-700 bg-white shadow-md cursor-pointer  transition-all duration-300 ease-in-out"
