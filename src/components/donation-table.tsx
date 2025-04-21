@@ -49,7 +49,7 @@ function DonationTable ({donations, fromAdmin=false , pagination , fromCampaign=
                     <span>
                        {dayjs(createdAt).format('MMM DD, YYYY hh:mm A')}
                     </span>
-                )
+                ) 
             }
         },
       
